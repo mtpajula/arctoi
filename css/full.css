@@ -1,0 +1,50 @@
+/*
+ * Start Bootstrap - Full (http://startbootstrap.com/)
+ * Copyright 2013-2016 Start Bootstrap
+ * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap/blob/gh-pages/LICENSE)
+ */
+
+ html, body, #container {
+   height: 100%;
+   overflow: hidden;
+   width: 100%;
+ }
+ body {
+   /* height of .navbar, customize with @navbar-height variable */
+   padding-top: 50px;
+ }
+
+/* Header Image Background - Change the URL below to your image path (example: ../images/background.jpg) */
+
+.full {
+    background: url('http://placehold.it/1920x1080') no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    background-size: cover;
+    -o-background-size: cover;
+}
+
+.navbar {
+  min-height: 50px;
+}
+#sidebar {
+  float: left;
+  height: 100%;
+  max-width: 100%;
+  width: 150px;
+}
+#map {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  height: 100%;
+  width: auto;
+}
+.sidebar-wrapper {
+  height: 100%;
+  position: relative;
+  width: 100%;
+}
+@media (max-width: 767px) {
+#sidebar {
+  display: none;
+}
+}

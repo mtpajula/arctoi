@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Make sure the <html> tag is set to the .full CSS class. Change the background image in the full.css file. -->
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Arctoi Map</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- leaflet CSS -->
+    <link rel="stylesheet" href="css/leaflet.css" />
+
+    <!-- Custom fullscreen map CSS -->
+    <link href="css/full.css" rel="stylesheet">
+
+    <!-- Custom arctoi CSS -->
+    <link href="css/arctoi-main.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Arctoi</a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a href="#" data-toggle="modal" data-target="#aboutModal">Tietoja</a>
+                    </li>
+                    <li>
+                        <a href="#" data-toggle="modal" data-target="#templateModal">Tuo</a>
+                    </li>
+                    <li>
+                        <a href="#">Vie</a>
+                    </li>
+
+                    <li class="dropdown">
+                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Toiminnot <span class="caret"></span></a>
+                      <ul class="dropdown-menu">
+                        <li><a href="#" data-toggle="modal" data-target="#templateModal">Action</a></li>
+                        <li><a href="#">Another action</a></li>
+                        <li><a href="#">Something else here</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="#">Separated link</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="#">One more separated link</a></li>
+                      </ul>
+                    </li>
+
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Put your page content here! -->
+
+  <div id="container">
+    <div id="map"></div>
+  </div>
+
+  <!-- Modal -->
+  <div id="templateModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Tuo tiedosto</h4>
+        </div>
+        <div class="modal-body">
+
+          <p>Valitse tiedosto</p>
+          <div class="input-group">
+              <label class="input-group-btn">
+                  <span class="btn btn-primary">
+                      Browse&hellip; <input type="file" style="display: none;" multiple>
+                  </span>
+              </label>
+              <input type="text" class="form-control" readonly>
+          </div>
+
+          <br />
+          <p>Valitse tyyppi</p>
+          <select class="form-control" id="filetype">
+            <option>gt</option>
+            <option>prn</option>
+            <option>dxf</option>
+          </select>
+
+          <br />
+          <p>Valitse koordinaatisto</p>
+          <select class="form-control" id="input-coordinates">
+            <option>ETRS-GK25</option>
+            <option>ETRS-GK26</option>
+            <option>ETRS-GK27</option>
+          </select>
+
+          <br />
+          <p>Valitse koordinaattien järjestys</p>
+          <select class="form-control" id="input-coordinates">
+            <option>X on N</option>
+            <option>X on E</option>
+          </select>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Lataa</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="aboutModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Tietoja</h4>
+        </div>
+        <div class="modal-body">
+
+          <p><b>Ohjelmasta</b></p>
+          <p>Modulaarinen javascript-karttaohjelma, jolla voi käsitellä mittausdataa.</p>
+          <p>Lisenssi: GNU GENERAL PUBLIC LICENSE, Version 3</p>
+
+          <p><b>Credits:</b></p>
+          <p><a href="http://getbootstrap.com/" target="_blank">bootstrap</a><br />
+          Code licensed MIT, docs CC BY 3.0.</p>
+          <p><a href="https://jquery.com/" target="_blank">jQuery</a><br />
+          Copyright jQuery Foundation and other contributors</p>
+          <p><a href="http://leafletjs.com/" target="_blank">Leaflet</a><br />
+          Copyright (c) 2010-2016, Vladimir Agafonkin<br />Copyright (c) 2010-2011, CloudMade<br />All rights reserved.</p>
+          <p><a href="http://proj4js.org/" target="_blank">Proj4js</a><br />
+          https://github.com/proj4js/proj4js/blob/master/LICENSE.md</p>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Sulje</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+    <!-- jQuery -->
+    <script src="js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- Leaflet map -->
+    <script src="js/leaflet.js"></script>
+
+    <!-- arctoi map -->
+    <script src="js/arctoi-map.js"></script>
+
+    <!-- ui elements -->
+    <script src="js/arctoi-ui.js"></script>
+
+</body>
+
+</html>
