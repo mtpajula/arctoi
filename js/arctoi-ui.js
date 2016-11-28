@@ -1,3 +1,11 @@
+
+var dummyDrop = {
+        "bar" : "foo",
+        "foo" : "bar"
+    };
+
+
+
 $(function() {
 
   // We can attach the `fileselect` event to all file inputs on the page
@@ -10,6 +18,11 @@ $(function() {
 
   // We can watch for our custom `fileselect` event like this
   $(document).ready( function() {
+  
+      for (drop in dummyDrop) {
+          console.log(drop);
+      }
+      
       $(':file').on('fileselect', function(event, numFiles, label) {
 
           var input = $(this).parents('.input-group').find(':text'),
