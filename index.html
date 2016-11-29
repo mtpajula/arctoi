@@ -62,16 +62,7 @@
 
                     <li class="dropdown">
                       <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Toiminnot <span class="caret"></span></a>
-                      <ul class="dropdown-menu">
-                        <li><a href="#">Tyhjennä kaikki</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="#">Uusi havainto</a></li>
-                        <li><a href="#">Pisteet havainnoksi</a></li>
-                        <li><a href="#">Havainnot pisteeksi</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="#">Tyhjennä mittalinja</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="#">Korjaa jonomittaus</a></li>
+                      <ul class="dropdown-menu" id="arctoi-dropdown">
                       </ul>
                     </li>
 
@@ -104,7 +95,7 @@
             <div class="input-group">
                 <label class="input-group-btn">
                     <span class="btn btn-primary">
-                        Browse&hellip; <input type="file" style="display: none;" multiple>
+                        Browse&hellip; <input id="actoi-input-file" type="file" style="display: none;" multiple>
                     </span>
                 </label>
                 <input type="text" class="form-control" readonly>
@@ -112,30 +103,24 @@
 
             <br />
             <p>Valitse tyyppi</p>
-            <select class="form-control" id="filetype">
-              <option>gt</option>
-              <option>prn</option>
-              <option>dxf</option>
+            <select class="form-control arctoi-filetype" id="input-filetype">
             </select>
 
             <br />
             <p>Valitse koordinaatisto</p>
-            <select class="form-control" id="input-coordinates">
-              <option>ETRS-GK25</option>
-              <option>ETRS-GK26</option>
-              <option>ETRS-GK27</option>
+            <select class="form-control arctoi-coordinates" id="input-coordinates">
             </select>
 
             <br />
             <p>Valitse koordinaattien järjestys</p>
-            <select class="form-control" id="input-coordinates">
-              <option>X on N</option>
-              <option>X on E</option>
+            <select class="form-control arctoi-axis" id="input-axis">
+              <option value="xIsn">X on N</option>
+              <option value="xIse">X on E</option>
             </select>
 
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary" data-dismiss="modal">Tuo</button>
+            <button id="actoi-input-button" type="button" class="btn btn-primary" data-dismiss="modal">Tuo</button>
           </div>
         </div>
 
@@ -155,29 +140,24 @@
           <div class="modal-body">
 
             <p>Valitse tyyppi</p>
-            <select class="form-control" id="filetype">
-              <option>gt</option>
-              <option>csv</option>
+            <select class="form-control arctoi-filetype" id="output-filetype">
             </select>
 
             <br />
             <p>Valitse koordinaatisto</p>
-            <select class="form-control" id="input-coordinates">
-              <option>ETRS-GK25</option>
-              <option>ETRS-GK26</option>
-              <option>ETRS-GK27</option>
+            <select class="form-control arctoi-coordinates" id="output-coordinates">
             </select>
 
             <br />
             <p>Valitse koordinaattien järjestys</p>
-            <select class="form-control" id="input-coordinates">
-              <option>X on N</option>
-              <option>X on E</option>
+            <select class="form-control arctoi-axis" id="output-axis">
+              <option value="xIsn">X on N</option>
+              <option value="xIse">X on E</option>
             </select>
 
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary" data-dismiss="modal">Lataa</button>
+            <button type="actoi-output-button" class="btn btn-primary" data-dismiss="modal">Lataa</button>
           </div>
         </div>
 
@@ -230,6 +210,16 @@
 
     <!-- arctoi map -->
     <script src="js/arctoi-map.js"></script>
+    <!--<script src="js/leaflet.textpath.js"></script>-->
+
+    <!-- proj4js -->
+    <script src="js/proj4js.js"></script>
+
+    <!-- surveyor -main and modules -->
+    <script src="js/surveyor-fileformats.js"></script>
+    <script src="js/surveyor-module-RightAnglify.js"></script>
+    <script src="js/surveyor-module-dummy.js"></script>
+    <script src="js/surveyor-main.js"></script>
 
     <!-- ui elements -->
     <script src="js/arctoi-ui.js"></script>
