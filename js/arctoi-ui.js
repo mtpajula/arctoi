@@ -303,14 +303,16 @@ function pointMarker(id) {
 		var popup = 'pisteitä: ' + p.measurements + ' kpl';
 		popup = popup + '<br />Nimi: <b>' + p.name + '</b>';
 		popup = popup + '<br />Korkeus: ' + p.altitude;
-        if (surveyor.modules.hasOwnProperty('ArctoiRightAnglify')) {
-    		popup = popup + '<br /><br /><button class="btn btn-primary" onclick=rightangle1('+id+') value="test">mittalinjan alku</button>';
-    		popup = popup + '<br /><br /><button class="btn btn-primary" onclick=rightangle2('+id+') value="test">mittalinjan loppu</button>';
-    		popup = popup + '<br /><br /><button class="btn btn-primary" onclick=perpendicular('+id+') value="test">mittaa tähän</button>';
+        for (m in surveyor.modules) {
+            if (typeof surveyor.modules[m].toMapPopup === 'function') {
+                popup = popup + surveyor.modules[m].toMapPopup(id, p);
+            }
         }
+        /*
 		if (p.image) {
 			popup = popup + '<br /><button onclick=openImage('+p.name+') value="test">Avaa kuva</button>';
 		}
+        */
 
 		L.circleMarker([p.lat,p.lon]).bindPopup(popup).addTo(points);
 		surveyor.s.points[id].ui = "leaflet";

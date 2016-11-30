@@ -4,6 +4,8 @@
 Pointify
 
 */
+var positions = new L.FeatureGroup();
+map.addLayer(positions);
 
 var Pointify = function () {
 	this.observations = [];
@@ -45,6 +47,7 @@ Pointify.prototype.setStorage = function(s) {
 
 Pointify.prototype.clear = function() {
 	this.observations = [];
+	positions.clearLayers();
     arctoiMessage('Pointify','success','clear');
 };
 

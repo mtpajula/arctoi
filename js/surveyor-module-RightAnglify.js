@@ -3,6 +3,9 @@
 Right angle calculator Arctoi-map ui interaction class
 
 */
+var rightangle = new L.FeatureGroup();
+map.addLayer(rightangle);
+
 var ArctoiRightAnglify = function () {
     this.ra = new RightAnglify();
     this.title = 'RightAnglify';
@@ -18,6 +21,7 @@ var ArctoiRightAnglify = function () {
 };
 
 ArctoiRightAnglify.prototype.setTransform = function(t) {
+
     console.log('set transform to ArctoiRightAnglify')
 	this.ra.t = t;
 };
@@ -34,14 +38,18 @@ ArctoiRightAnglify.prototype.clear = function(c) {
     arctoiMessage('ArctoiRightAnglify','success','clear');
 };
 
+ArctoiRightAnglify.prototype.toMapPopup = function(id, p) {
+    var popup = '<br /><br /><button class="btn btn-primary" onclick=rightangle1('+id+') value="test">mittalinjan alku</button>';
+    popup = popup + '<br /><br /><button class="btn btn-primary" onclick=rightangle2('+id+') value="test">mittalinjan loppu</button>';
+    popup = popup + '<br /><br /><button class="btn btn-primary" onclick=perpendicular('+id+') value="test">mittaa tähän</button>';
+    return popup;
+};
+
 
 function drawRigthAngle() {
     var l = surveyor.modules['ArctoiRightAnglify'].ra.length;
     var a = surveyor.modules['ArctoiRightAnglify'].ra.a;
     var b = surveyor.modules['ArctoiRightAnglify'].ra.b;
-	//document.getElementById("ra_length").innerHTML = surveyor.modules['ArctoiRightAnglify'].ra.length;
-	//document.getElementById("ra_a").innerHTML = surveyor.modules['ArctoiRightAnglify'].ra.a;
-	//document.getElementById("ra_b").innerHTML = surveyor.modules['ArctoiRightAnglify'].ra.b;
     console.log("ra l:"+l+" a:"+a+" b:"+b);
 }
 
@@ -66,8 +74,6 @@ function perpendicular(id) {
 	L.circleMarker([ra.intersectionPoint.lat,ra.intersectionPoint.lon], {color: 'black'}).bindPopup("Mittalinja:"+ra.length+"<br />a:"+ra.a+"<br />b:"+ra.b).addTo(rightangle);
 
 	L.polyline(ra.getSurveyLineLatLon(), {color: 'red'}).addTo(rightangle);
-	//L.polyline(ra.aLatLon(), {color: 'blue'}).setText(ra.a.toString()).addTo(rightangle);
-	//L.polyline(ra.bLatLon(), {color: 'green'}).setText(ra.b.toString()).addTo(rightangle);
     L.polyline(ra.aLatLon(), {color: 'blue'}).addTo(rightangle);
     L.polyline(ra.bLatLon(), {color: 'green'}).addTo(rightangle);
 

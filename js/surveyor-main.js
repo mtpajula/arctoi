@@ -66,10 +66,10 @@ Surveyor.prototype.input = function(file) {
 
     this.formats[this.currentInputFormat].setStorage(this.s);
     var points = this.formats[this.currentInputFormat].read(file);
-
+    
     this.TransformPointsCartesianToPolar();
     this.s.addEpsg(this.t.epsg);
-    
+
     return points;
 };
 
@@ -170,7 +170,6 @@ SURVEYOR Transform -class to handle coordinate transforms
 var Transform = function () {
 	Proj4js.defs['EPSG:3067'] = '+title=ETRS-TM35FIN +proj=utm +zone=35 +ellps=GRS80 +units=m +no_defs';
 	Proj4js.defs['EPSG:2393'] = '+title=KKJ +proj=tmerc +lat_0=0 +lon_0=27 +k=1 +x_0=3500000 +y_0=0 +ellps=intl +towgs84=-96.0617,-82.4278,-121.7535,4.80107,0.34543,-1.37646,1.4964 +units=m +no_defs';
-
 	Proj4js.defs['EPSG:3874'] = '+title=ETRS-GK20FIN +proj=tmerc +lat_0=0 +lon_0=20 +k=1 +x_0=20500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs';
 	Proj4js.defs['EPSG:3875'] = '+title=ETRS-GK21FIN +proj=tmerc +lat_0=0 +lon_0=21 +k=1 +x_0=21500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs';
 	Proj4js.defs['EPSG:3876'] = '+title=ETRS-GK22FIN +proj=tmerc +lat_0=0 +lon_0=22 +k=1 +x_0=22500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs';
@@ -181,6 +180,8 @@ var Transform = function () {
 	Proj4js.defs['EPSG:3881'] = '+title=ETRS-GK27FIN +proj=tmerc +lat_0=0 +lon_0=27 +k=1 +x_0=27500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs';
 	Proj4js.defs['EPSG:3882'] = '+title=ETRS-GK28FIN +proj=tmerc +lat_0=0 +lon_0=28 +k=1 +x_0=28500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs';
 	Proj4js.defs['EPSG:3883'] = '+title=ETRS-GK29FIN +proj=tmerc +lat_0=0 +lon_0=29 +k=1 +x_0=29500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs';
+    Proj4js.defs['EPSG:900913'] = "+title=Google Mercator +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs";
+    Proj4js.defs['EPSG:10000'] = "+title=None +proj=tmerc +lat_0=0 +lon_0=27 +k=1 +y_0=-6700000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs";
 
 	this.projs = {
 			'EPSG:3067': new Proj4js.Proj('EPSG:3067'),
@@ -194,12 +195,16 @@ var Transform = function () {
 			'EPSG:3880': new Proj4js.Proj('EPSG:3880'),
 			'EPSG:3881': new Proj4js.Proj('EPSG:3881'),
 			'EPSG:3882': new Proj4js.Proj('EPSG:3882'),
-			'EPSG:3883': new Proj4js.Proj('EPSG:3883')
+			'EPSG:3883': new Proj4js.Proj('EPSG:3883'),
+            'EPSG:900913': new Proj4js.Proj('EPSG:900913'),
+            'EPSG:4326': new Proj4js.Proj('EPSG:4326'),
+            'EPSG:10000': new Proj4js.Proj('EPSG:10000'),
 		};
 
     this.epsg = 'EPSG:3067';
 	this.cartesian = this.projs[this.epsg];
 	this.polar = Proj4js.WGS84;
+    console.log(this.polar.title);
 };
 
 Transform.prototype.setCartesian = function(to) {
