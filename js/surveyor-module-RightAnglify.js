@@ -22,6 +22,17 @@ ArctoiRightAnglify.prototype.setTransform = function(t) {
 	this.ra.t = t;
 };
 
+ArctoiRightAnglify.prototype.runCommand = function(c) {
+    if (c === 'clear') {
+        this.clear();
+    }
+};
+
+ArctoiRightAnglify.prototype.clear = function(c) {
+    this.ra.clear();
+    rightangle.clearLayers();
+    arctoiMessage('ArctoiRightAnglify','success','clear');
+};
 
 
 function drawRigthAngle() {
@@ -52,7 +63,7 @@ function perpendicular(id) {
 	ra.createSurveyLine();
 	ra.setPerpendicular(surveyor.s.points[parseInt(id)]);
 
-	L.circleMarker([ra.intersectionPoint.lat,ra.intersectionPoint.lon], {color: 'black'}).bindPopup("Risteys").addTo(rightangle);
+	L.circleMarker([ra.intersectionPoint.lat,ra.intersectionPoint.lon], {color: 'black'}).bindPopup("Mittalinja:"+ra.length+"<br />a:"+ra.a+"<br />b:"+ra.b).addTo(rightangle);
 
 	L.polyline(ra.getSurveyLineLatLon(), {color: 'red'}).addTo(rightangle);
 	//L.polyline(ra.aLatLon(), {color: 'blue'}).setText(ra.a.toString()).addTo(rightangle);

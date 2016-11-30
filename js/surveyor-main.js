@@ -22,7 +22,7 @@ var Surveyor = function () {
     this.currentOutputFormat = 0;
 
     this.modules = {
-        "testModule" : new testModule(),
+        "Pointify" : new Pointify(),
         "ArctoiRightAnglify" : new ArctoiRightAnglify()
     };
 
@@ -32,11 +32,24 @@ var Surveyor = function () {
         if (this.modules[m].stuff["t"]) {
             this.modules[m].setTransform(this.t);
         }
+        if (this.modules[m].stuff["s"]) {
+            this.modules[m].setStorage(this.s);
+        }
     }
+};
+
+Surveyor.prototype.runModuleCommand = function(m, c) {
+    this.modules[m].runCommand(c);
 };
 
 Surveyor.prototype.clear = function() {
     this.s.clear();
+
+    for (m in this.modules) {
+        this.modules[m].clear();
+    };
+
+    arctoiMessage('Surveyor','success','clear');
 };
 
 Surveyor.prototype.setInputFormat = function(format) {
@@ -55,19 +68,45 @@ Surveyor.prototype.input = function(file) {
     var points = this.formats[this.currentInputFormat].read(file);
 
     this.TransformPointsCartesianToPolar();
-
+    this.s.addEpsg(this.t.epsg);
+    
     return points;
 };
 
 Surveyor.prototype.TransformPointsCartesianToPolar = function() {
+    console.log(this.t.epsg);
     for (p in this.s.points) {
-        coords = this.t.cartesianToPolar(this.s.points[p].e,this.s.points[p].n);
-        this.s.points[p].lat = coords[1];
-        this.s.points[p].lon = coords[0];
+        if (this.s.points[p].epsg === "") {
+            coords = this.t.cartesianToPolar(this.s.points[p].e,this.s.points[p].n);
+            this.s.points[p].lat = coords[1];
+            this.s.points[p].lon = coords[0];
+            this.s.points[p].epsg = this.t.epsg;
+        }
     }
 };
 
-Surveyor.prototype.output = function(epsg) {
+Surveyor.prototype.TransformPointsPolarToCartesian = function(s) {
+    for (p in s.points) {
+        coords = this.t.polarToCartesian(s.points[p].lon,s.points[p].lat);
+        s.points[p].n = coords[1];
+        s.points[p].e = coords[0];
+    }
+    return s;
+};
+
+Surveyor.prototype.output = function() {
+
+    if (this.s.epsg != this.t.epsg) {
+        console.log("Eri koordinaatisto kuin tuodessa");
+        let copys = JSON.parse(JSON.stringify(this.s));
+        copys = this.TransformPointsPolarToCartesian(copys);
+        this.formats[this.currentOutputFormat].setStorage(copys);
+        arctoiMessage('main','neutral'," Muunto: "+this.s.epsg+" > "+this.t.epsg);
+        console.log(copys);
+    } else {
+        this.formats[this.currentOutputFormat].setStorage(this.s);
+    }
+
     return this.formats[this.currentOutputFormat].write();
 };
 
@@ -89,6 +128,7 @@ var Point = function () {
 	this.altitudeAccuracy = 0;
 	this.ui = null;
 	this.image = false;
+    this.epsg = "";
 };
 
 /*
@@ -96,10 +136,31 @@ Storage
 */
 var Storage = function () {
 	this.points = [];
+    this.epsg = "";
 };
 
 Storage.prototype.clear = function() {
     this.points = [];
+};
+
+Storage.prototype.isEmpty = function() {
+    if (this.points.length == 0) {
+        return true;
+    }
+    return false;
+};
+
+Storage.prototype.addEpsg = function(epsg) {
+    if (this.epsg === "") {
+        this.epsg = epsg;
+    } else if (this.epsg === epsg) {
+        this.epsg = epsg;
+    } else {
+        arctoiMessage('Storage','warning','Mixed cartesian coords');
+        this.epsg = "multiple";
+    }
+    console.log("Storage: "+this.epsg);
+    return true;
 };
 
 
@@ -136,14 +197,17 @@ var Transform = function () {
 			'EPSG:3883': new Proj4js.Proj('EPSG:3883')
 		};
 
-	this.cartesian = this.projs['EPSG:3067'];
+    this.epsg = 'EPSG:3067';
+	this.cartesian = this.projs[this.epsg];
 	this.polar = Proj4js.WGS84;
 };
 
 Transform.prototype.setCartesian = function(to) {
 	console.log('try to set ' + to);
 	this.cartesian = this.projs[to];
+    this.epsg = to;
 	console.log('Cartesian set to ' + this.cartesian.title);
+    arctoiMessage('Transform','neutral',"coordinate system set to: " + this.cartesian.title);
 };
 
 Transform.prototype.do = function(x,y,from,to) {

@@ -13,3 +13,11 @@ var testModule = function () {
         "s" : false
     };
 };
+
+testModule.prototype.runCommand = function(c) {
+    console.log(c);
+};
+
+testModule.prototype.clear = function(c) {
+    console.log("clear");
+};

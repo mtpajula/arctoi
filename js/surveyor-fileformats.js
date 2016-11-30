@@ -38,15 +38,15 @@ CSVFormat.prototype.constructor = CSVFormat;
 
 CSVFormat.prototype.write = function() {
 
-	if (this.points.length === 0) {
+	if (this.s.points.length === 0) {
 		console.log('Empty points list');
 		return;
 	}
 
-	var text = this.getCsvHeader(this.points[0]) + "\r\n";
+	var text = this.getCsvHeader(this.s.points[0]) + "\r\n";
 
-	for (var point in this.points) {
-		text = text + this.getCsvLine(this.points[point]) + "\r\n";
+	for (var point in this.s.points) {
+		text = text + this.getCsvLine(this.s.points[point]) + "\r\n";
 	}
 	return text;
 };
@@ -115,6 +115,10 @@ DxfRead.prototype.createPoint = function(rawname,rawx,rawy,rawz) {
     var x = parseFloat(rawx.trim());
     var y = parseFloat(rawy.trim());
     p.altitude = parseFloat(rawz.trim());
+
+	if (isNaN(p.altitude)) {
+		p.altitude = 0.0;
+	}
 
     if (this.xIse) {
     	p.n = y;
@@ -264,8 +268,6 @@ GtRead.prototype.writePoint = function(p) {
 	text = text + this.writeProperty(this.writeCoord(x),14);
 	text = text + this.writeProperty(this.writeCoord(y),14);
 	text = text + this.writeProperty(this.writeCoord(p.altitude),14);
-
-	console.log(text);
 
 	return text;
 };
