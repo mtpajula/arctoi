@@ -13,11 +13,6 @@ var ArctoiRightAnglify = function () {
     this.commands = {
         'clear' : 'tyhjennä mittalinja'
     };
-
-    this.stuff = {
-        "t" : true,
-        "s" : false
-    };
 };
 
 ArctoiRightAnglify.prototype.setTransform = function(t) {

@@ -23,23 +23,43 @@ var Surveyor = function () {
 
     this.modules = {
         "Pointify" : new Pointify(),
-        "ArctoiRightAnglify" : new ArctoiRightAnglify()
+        "ArctoiRightAnglify" : new ArctoiRightAnglify(),
+        "correction" : new Correction()
     };
 
+    // TODO jotenkin ei mene hyvin tuo initModules
+
+    this.initModules();
+};
+
+Surveyor.prototype.initModules = function() {
     console.log('Init modules:');
     for (m in this.modules) {
-        console.log(" "+this.modules[m].title);
-        if (this.modules[m].stuff["t"]) {
-            this.modules[m].setTransform(this.t);
+        try {
+            if (typeof surveyor.modules[m].setTransform === 'function') {
+                this.modules[m].setTransform(this.t);
+            }
+        } catch(err) {
+            console.log(err);
+            arctoiMessage('Surveyor','neutral',m+": no setTransform");
         }
-        if (this.modules[m].stuff["s"]) {
-            this.modules[m].setStorage(this.s);
+        try {
+            if (typeof surveyor.modules[m].setStorage === 'function') {
+                this.modules[m].setStorage(this.s);
+            }
+        } catch(err) {
+            console.log(err);
+            arctoiMessage('Surveyor','neutral',m+": no setStorage");
         }
     }
 };
 
 Surveyor.prototype.runModuleCommand = function(m, c) {
-    this.modules[m].runCommand(c);
+    try {
+        this.modules[m].runCommand(c);
+    } catch(err) {
+       arctoiMessage(m+"-"+c,'alert',err);
+   }
 };
 
 Surveyor.prototype.clear = function() {
@@ -66,7 +86,7 @@ Surveyor.prototype.input = function(file) {
 
     this.formats[this.currentInputFormat].setStorage(this.s);
     var points = this.formats[this.currentInputFormat].read(file);
-    
+
     this.TransformPointsCartesianToPolar();
     this.s.addEpsg(this.t.epsg);
 

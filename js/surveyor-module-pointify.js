@@ -19,11 +19,6 @@ var Pointify = function () {
         'pfy2' : 'Uusi havainto',
         'pfy3' : 'Luo keskiarvopiste',
     }
-
-    this.stuff = {
-        "t" : true,
-        "s" : true
-    };
 };
 
 Pointify.prototype.runCommand = function(c) {
