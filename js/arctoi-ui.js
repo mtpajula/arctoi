@@ -304,8 +304,10 @@ function pointMarker(id) {
 		popup = popup + '<br />Nimi: <b>' + p.name + '</b>';
 		popup = popup + '<br />Korkeus: ' + p.altitude;
         for (m in surveyor.modules) {
-            if (typeof surveyor.modules[m].toMapPopup === 'function') {
+            try {
                 popup = popup + surveyor.modules[m].toMapPopup(id, p);
+            } catch(err) {
+                
             }
         }
         /*

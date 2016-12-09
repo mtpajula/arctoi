@@ -36,20 +36,16 @@ Surveyor.prototype.initModules = function() {
     console.log('Init modules:');
     for (m in this.modules) {
         try {
-            if (typeof surveyor.modules[m].setTransform === 'function') {
-                this.modules[m].setTransform(this.t);
-            }
+            this.modules[m].setTransform(this.t);
         } catch(err) {
             console.log(err);
-            arctoiMessage('Surveyor','neutral',m+": no setTransform");
+            //arctoiMessage('Surveyor','neutral',m+": no setTransform");
         }
         try {
-            if (typeof surveyor.modules[m].setStorage === 'function') {
-                this.modules[m].setStorage(this.s);
-            }
+            this.modules[m].setStorage(this.s);
         } catch(err) {
             console.log(err);
-            arctoiMessage('Surveyor','neutral',m+": no setStorage");
+            //arctoiMessage('Surveyor','neutral',m+": no setStorage");
         }
     }
 };
@@ -58,7 +54,7 @@ Surveyor.prototype.runModuleCommand = function(m, c) {
     try {
         this.modules[m].runCommand(c);
     } catch(err) {
-       arctoiMessage(m+"-"+c,'alert',err);
+       surveyorMessage(m+"-"+c,'alert',err);
    }
 };
 
@@ -69,7 +65,7 @@ Surveyor.prototype.clear = function() {
         this.modules[m].clear();
     };
 
-    arctoiMessage('Surveyor','success','clear');
+    surveyorMessage('Surveyor','success','clear');
 };
 
 Surveyor.prototype.setInputFormat = function(format) {
@@ -121,7 +117,7 @@ Surveyor.prototype.output = function() {
         let copys = JSON.parse(JSON.stringify(this.s));
         copys = this.TransformPointsPolarToCartesian(copys);
         this.formats[this.currentOutputFormat].setStorage(copys);
-        arctoiMessage('main','neutral'," Muunto: "+this.s.epsg+" > "+this.t.epsg);
+        surveyorMessage('main','neutral'," Muunto: "+this.s.epsg+" > "+this.t.epsg);
         console.log(copys);
     } else {
         this.formats[this.currentOutputFormat].setStorage(this.s);
@@ -176,7 +172,7 @@ Storage.prototype.addEpsg = function(epsg) {
     } else if (this.epsg === epsg) {
         this.epsg = epsg;
     } else {
-        arctoiMessage('Storage','warning','Mixed cartesian coords');
+        surveyorMessage('Storage','warning','Mixed cartesian coords');
         this.epsg = "multiple";
     }
     console.log("Storage: "+this.epsg);
@@ -232,7 +228,7 @@ Transform.prototype.setCartesian = function(to) {
 	this.cartesian = this.projs[to];
     this.epsg = to;
 	console.log('Cartesian set to ' + this.cartesian.title);
-    arctoiMessage('Transform','neutral',"coordinate system set to: " + this.cartesian.title);
+    surveyorMessage('Transform','neutral',"coordinate system set to: " + this.cartesian.title);
 };
 
 Transform.prototype.do = function(x,y,from,to) {

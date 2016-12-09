@@ -30,7 +30,7 @@ ArctoiRightAnglify.prototype.runCommand = function(c) {
 ArctoiRightAnglify.prototype.clear = function(c) {
     this.ra.clear();
     rightangle.clearLayers();
-    arctoiMessage('ArctoiRightAnglify','success','clear');
+    surveyorMessage('ArctoiRightAnglify','success','clear');
 };
 
 ArctoiRightAnglify.prototype.toMapPopup = function(id, p) {
@@ -66,11 +66,21 @@ function perpendicular(id) {
 	ra.createSurveyLine();
 	ra.setPerpendicular(surveyor.s.points[parseInt(id)]);
 
-	L.circleMarker([ra.intersectionPoint.lat,ra.intersectionPoint.lon], {color: 'black'}).bindPopup("Mittalinja:"+ra.length+"<br />a:"+ra.a+"<br />b:"+ra.b).addTo(rightangle);
+    var colorSline = "#3399ff";
+    var colorA = "#33cc33";
+    var colorB = "#ff9900";
 
-	L.polyline(ra.getSurveyLineLatLon(), {color: 'red'}).addTo(rightangle);
-    L.polyline(ra.aLatLon(), {color: 'blue'}).addTo(rightangle);
-    L.polyline(ra.bLatLon(), {color: 'green'}).addTo(rightangle);
+    var popupstr = '<table class="table table-bordered"><thead><tr><th>Linja</th><th>Pituus</th></tr></thead><tbody>'
+    popupstr = popupstr + '<tr><td><span style="color:'+colorSline+';">Mittalinja</span></td><td>'+ra.length+' m</td></tr>';
+    popupstr = popupstr + '<tr><td><span style="color:'+colorA+';">a</span></td><td>'+ra.a+' m</td></tr>';
+    popupstr = popupstr + '<tr><td><span style="color:'+colorB+';">b</span></td><td>'+ra.b+' m</td></tr>';
+    popupstr = popupstr + '</tbody></table>';
+
+	L.circleMarker([ra.intersectionPoint.lat,ra.intersectionPoint.lon], {color: 'black'}).bindPopup(popupstr).addTo(rightangle);
+
+	L.polyline(ra.getSurveyLineLatLon(), {color: colorSline}).addTo(rightangle);
+    L.polyline(ra.aLatLon(), {color: colorA}).addTo(rightangle);
+    L.polyline(ra.bLatLon(), {color: colorB}).addTo(rightangle);
 
 	drawRigthAngle();
 }

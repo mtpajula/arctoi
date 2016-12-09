@@ -8,6 +8,10 @@ type-strings: success, warning, neutral, alert
 
 var arctoiMessages = [];
 
+function surveyorMessage(sender, type, message) {
+    arctoiMessage(sender, type, message);
+};
+
 function arctoiMessage(sender, type, message) {
     var m = {
         'sender' : sender,

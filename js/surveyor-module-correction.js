@@ -22,13 +22,12 @@ function startCorrection() {
 	surveyor.modules["correction"].log();
 	console.log('1');
 	surveyor.modules["correction"].do();
-	console.log('2');
-    surveyor.modules["correction"].log();
+	//console.log('2');
+    //surveyor.modules["correction"].log();
 	//surveyor.s.points = surveyor.modules["correction"].getPoints();
-	console.log('3');
+	//console.log('3');
 	//surveyor.gtread.write();
-
-	console.log('4');
+	//console.log('4');
 	//points.clearLayers();
 	//drawPointPointMarkers();
 };

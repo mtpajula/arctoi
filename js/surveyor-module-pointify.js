@@ -43,7 +43,7 @@ Pointify.prototype.setStorage = function(s) {
 Pointify.prototype.clear = function() {
 	this.observations = [];
 	positions.clearLayers();
-    arctoiMessage('Pointify','success','clear');
+    surveyorMessage('Pointify','success','clear');
 };
 
 Pointify.prototype.addObservation = function(obs) {
@@ -53,7 +53,7 @@ Pointify.prototype.addObservation = function(obs) {
 Pointify.prototype.fuse = function() {
 
 	if (this.observations.length === 0) {
-        arctoiMessage('Pointify','alert','No observations');
+        surveyorMessage('Pointify','alert','No observations');
 	    return;
 	}
 
@@ -99,7 +99,7 @@ Pointify.prototype.fuse = function() {
 	}
 
 	if (w.weightsum === 0.0) {
-        arctoiMessage('Pointify','alert','Weightsum is 0');
+        surveyorMessage('Pointify','alert','Weightsum is 0');
 	    return;
 	}
 
@@ -116,7 +116,7 @@ Pointify.prototype.fuse = function() {
 	}
 
 	this.addCoords(p);
-    arctoiMessage('Pointify','neutral',"Coordinates weighted average");
+    surveyorMessage('Pointify','neutral',"Coordinates weighted average");
 
 	this.s.points.push(p);
     this.observations = [];
@@ -140,7 +140,7 @@ function createAvgPoint() {
     map.fitBounds(points.getBounds());
 
     positions.clearLayers();
-    arctoiMessage('Pointify','success','createAvgPoint');
+    surveyorMessage('Pointify','success','createAvgPoint');
 }
 
 
@@ -155,7 +155,7 @@ function positionMarker(json) {
 function pointsToLoc() {
 
     if (surveyor.s.isEmpty()) {
-        arctoiMessage('Pointify','alert','No points');
+        surveyorMessage('Pointify','alert','No points');
         return;
     }
 
@@ -171,7 +171,7 @@ function pointsToLoc() {
     points.clearLayers();
     map.fitBounds(positions.getBounds());
 
-    arctoiMessage('Pointify','success','pointsToLoc');
+    surveyorMessage('Pointify','success','pointsToLoc');
 };
 
 function getPosition() {
@@ -184,7 +184,7 @@ function getPosition() {
 
         navigator.geolocation.getCurrentPosition(getPositionAction);
     } else {
-        arctoiMessage('Pointify','alert','Geolocation is not supported by this browser."');
+        surveyorMessage('Pointify','alert','Geolocation is not supported by this browser."');
     }
 }
 
@@ -207,5 +207,5 @@ function getPositionAction(position) {
 
     $('#loadingModal').modal('hide');
 
-    arctoiMessage('Pointify','success','Geolocation done"');
+    surveyorMessage('Pointify','success','Geolocation done"');
 }
