@@ -51,11 +51,14 @@ Surveyor.prototype.initModules = function() {
 };
 
 Surveyor.prototype.runModuleCommand = function(m, c) {
+    this.modules[m].runCommand(c);
+    /*
     try {
         this.modules[m].runCommand(c);
     } catch(err) {
        surveyorMessage(m+"-"+c,'alert',err);
    }
+   */
 };
 
 Surveyor.prototype.clear = function() {

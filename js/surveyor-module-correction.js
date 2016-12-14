@@ -2,10 +2,45 @@
 /*
 
 Coordinate correction in survey line
-TODO all
+TODO jonokorjaa sellainen, jossa ei ole suunnan sulkua sekä messages!
 */
+
+var corrected = new L.FeatureGroup();
+map.addLayer(corrected);
+
+function correctionHelp() {
+	var h = '<p>Alla mallitiedosto:</p>';
+	h = h + '\xa07228\xa0\xa0\xa0\xa06676806.896\xa0\xa0\xa0\xa025497020.617\xa0\xa0\xa0\xa00.000<br />';
+	h = h + '\xa07227\xa0\xa0\xa0\xa06676735.366\xa0\xa0\xa0\xa025497012.010\xa0\xa0\xa0\xa00.000<br />';
+	h = h + '20141\xa0\xa0\xa0\xa06676646.685\xa0\xa0\xa0\xa025497025.193\xa0\xa0\xa0\xa08.929<br />';
+	h = h + '20142\xa0\xa0\xa0\xa06676548.349\xa0\xa0\xa0\xa025497083.838\xa0\xa0\xa0\xa09.774<br />';
+	h = h + '20143\xa0\xa0\xa0\xa06676437.194\xa0\xa0\xa0\xa025497198.476\xa0\xa0\xa011.355<br />';
+	h = h + '20144\xa0\xa0\xa0\xa06676506.711\xa0\xa0\xa0\xa025497345.567\xa0\xa0\xa0\xa08.748<br />';
+	h = h + '20145\xa0\xa0\xa0\xa06676639.873\xa0\xa0\xa0\xa025497416.418\xa0\xa0\xa010.242<br />';
+	h = h + '20146\xa0\xa0\xa0\xa06676743.977\xa0\xa0\xa0\xa025497495.378\xa0\xa0\xa010.411<br />';
+	h = h + '3169k\xa0\xa0\xa0\xa06676769.567\xa0\xa0\xa0\xa025497416.893\xa0\xa0\xa0\xa00.000<br />';
+	h = h + '3170k\xa0\xa0\xa0\xa06676682.223\xa0\xa0\xa0\xa025497244.900\xa0\xa0\xa0\xa00.000<br />';
+	h = h + '\xa03169\xa0\xa0\xa0\xa06676769.675\xa0\xa0\xa0\xa025497416.918\xa0\xa0\xa0\xa00.000<br />';
+	h = h + '\xa03170\xa0\xa0\xa0\xa06676682.313\xa0\xa0\xa0\xa025497244.960\xa0\xa0\xa0\xa00.000<br />';
+	h = h + '<br /><p>Ensimmäiset kaksi pistettä on lähtöpiste, johon keskistettiin (7227) ja suunta (7228). ';
+	h = h + 'Viimeiset neljä pistettä ovat sulkupiste (3169) ja suunta (3170) havaintoina (k****) sekä teoreettisinä (kaksi viimeisintä)</p>';
+	surveyorHelp("Correction -ohje", h);
+};
+
+function correctionPositionMarker(p) {
+	var s = {
+		color: 'green'
+	}
+	var popup = 'Nimi: <b>' + p.name + '</b>';
+	L.circleMarker([p.lat,p.lon], s).bindPopup(popup).addTo(positions);
+}
+
 function startCorrection() {
 	console.log('onclick startCorrection');
+	if (surveyor.s.points.length == 0) {
+		surveyorMessage('Correction','alert','No points');
+		return;
+	}
 
 	console.log('set points');
 	for (var p in surveyor.s.points) {
@@ -22,6 +57,7 @@ function startCorrection() {
 	surveyor.modules["correction"].log();
 	console.log('1');
 	surveyor.modules["correction"].do();
+
 	//console.log('2');
     //surveyor.modules["correction"].log();
 	//surveyor.s.points = surveyor.modules["correction"].getPoints();
@@ -30,6 +66,31 @@ function startCorrection() {
 	//console.log('4');
 	//points.clearLayers();
 	//drawPointPointMarkers();
+
+	var cpoints = surveyor.modules["correction"].getPoints();
+	for (p in cpoints) {
+		correctionPositionMarker(cpoints[p]);
+	}
+	surveyorMessage('Correction','success','Measure line corrected');
+};
+
+function setCorrected() {
+	var cpoints = surveyor.modules["correction"].getPoints();
+	console.log(cpoints);
+	if (cpoints.length == 0) {
+		surveyorMessage('Correction','alert','No corrected points');
+		return;
+	}
+
+	for (cp in cpoints) {
+		cpoints[cp].ui = null;
+	}
+
+	points.clearLayers();
+	surveyor.s.points = cpoints;
+
+	drawStoragePoints();
+	surveyor.modules["correction"].clear();
 };
 
 var Correction = function () {
@@ -42,7 +103,9 @@ var Correction = function () {
 	this.calc = new Calculations();
 
     this.commands = {
-        'startCorrection' : 'Aloita jonokorjaus'
+        'startCorrection' : 'Aloita jonokorjaus',
+		'setCorrected' : 'Korvaa pisteet korjatuilla',
+		'correctionHelp' : 'Jonokorjauksen ohje',
     }
 };
 
@@ -51,7 +114,15 @@ Correction.prototype.setTransform = function(t) {
 };
 
 Correction.prototype.runCommand = function(c) {
-    startCorrection();
+	if (c === 'startCorrection') {
+		startCorrection();
+	}
+	if (c === 'setCorrected') {
+		setCorrected();
+	}
+	if (c === 'correctionHelp') {
+		correctionHelp();
+	}
 };
 
 Correction.prototype.setCalc = function(calc) {
@@ -62,6 +133,8 @@ Correction.prototype.clear = function() {
 	this.start = null;
 	this.surveys = [];
 	this.stop = null;
+	corrected.clearLayers();
+	surveyorMessage('Correction','success','clear');
 };
 
 Correction.prototype.addStart = function(point) {

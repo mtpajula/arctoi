@@ -180,7 +180,7 @@ function getPosition() {
 
     if (navigator.geolocation) {
 
-        $('#loadingModal').modal('show');
+		surveyorLoading('show');
 
         navigator.geolocation.getCurrentPosition(getPositionAction);
     } else {
@@ -205,7 +205,7 @@ function getPositionAction(position) {
     //L.marker([jsonLine.lat,jsonLine.lon]).bindPopup(jsonLine.accuracy.toString()).addTo(positions);
     map.fitBounds(positions.getBounds());
 
-    $('#loadingModal').modal('hide');
+	surveyorLoading('hide');
 
     surveyorMessage('Pointify','success','Geolocation done"');
 }

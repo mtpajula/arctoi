@@ -12,6 +12,25 @@ function surveyorMessage(sender, type, message) {
     arctoiMessage(sender, type, message);
 };
 
+function surveyorHelp(sender, message) {
+    arctoiHelp(sender, message);
+};
+
+function surveyorLoading(mode) {
+    arctoiLoading(mode);
+};
+
+
+function arctoiHelp(sender, message) {
+    $('#infoModal').modal('show');
+    $('#infoModal-title').html(sender);
+    $('#infoModal-body').html(message);
+};
+
+function arctoiLoading(mode) {
+    $('#loadingModal').modal(mode);
+};
+
 function arctoiMessage(sender, type, message) {
     var m = {
         'sender' : sender,

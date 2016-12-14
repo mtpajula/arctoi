@@ -283,13 +283,23 @@ function currentSettings() {
 };
 
 /*
+MAP draw storagepoints
+*/
+function drawStoragePoints() {
+    for (var p in surveyor.s.points) {
+		pointMarker(p);
+	}
+    arctoiMessage('ui-drawStoragePoints','neutral',"Points: " + surveyor.s.points.length);
+}
+
+/*
 MAP draw points -loop
 */
 function drawPointMarkers(poi) {
 	for (var p in poi) {
 		pointMarker(poi[p]);
 	}
-    arctoiMessage('ui','neutral',"Points: " + surveyor.s.points.length);
+    arctoiMessage('ui-drawPointMarkers','neutral',"Points: " + surveyor.s.points.length);
 }
 
 /*
@@ -298,8 +308,9 @@ MAP draw point
 function pointMarker(id) {
 
 	var p = surveyor.s.points[id];
-
+    //console.log('pointMarker '+p.name+' '+p.ui);
 	if (p.ui === null) {
+
 		var popup = 'pisteitä: ' + p.measurements + ' kpl';
 		popup = popup + '<br />Nimi: <b>' + p.name + '</b>';
 		popup = popup + '<br />Korkeus: ' + p.altitude;
@@ -307,7 +318,7 @@ function pointMarker(id) {
             try {
                 popup = popup + surveyor.modules[m].toMapPopup(id, p);
             } catch(err) {
-                
+
             }
         }
         /*

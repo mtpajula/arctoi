@@ -18,7 +18,7 @@ var ortokuva = new L.TileLayer('http://{s}.kartat.kapsi.fi/ortokuva/{z}/{x}/{y}.
 var points = new L.FeatureGroup();
 
 L.control.scale().addTo(map);
-map.setView(new L.LatLng(60.1708, 24.9375), 7).addLayer(openstreetmap);
+map.setView(new L.LatLng(60.1708, 24.9375), 6).addLayer(openstreetmap);
 
 var baseMaps = {
     'OpenStreetMap': openstreetmap,
