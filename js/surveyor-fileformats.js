@@ -141,6 +141,7 @@ function PrnRead() {
 	ProtoRead.call(this);
 	this.title = 'prn';
     this.isInput = true;
+    this.isOutput = true;
 }
 
 PrnRead.prototype = Object.create(ProtoRead.prototype);
@@ -185,6 +186,37 @@ PrnRead.prototype.elementsRead = function(elements) {
     }
 
     return p;
+};
+
+PrnRead.prototype.write = function() {
+	var text = "";
+	for (var p in this.s.points) {
+		text = text + this.writePoint(this.s.points[p]) + "\r\n";
+	}
+	return text;
+};
+
+PrnRead.prototype.writePoint = function(p) {
+	var text = "";
+
+	text = text + " " + p.name;
+
+	var x = 0.0;
+	var y = 0.0;
+
+	if (this.xIse) {
+    	y = p.n;
+    	x = p.e;
+    } else {
+    	x = p.n;
+    	y = p.e;
+    }
+
+	text = text + " " + x;
+	text = text + " " + y;
+	text = text + " " + p.altitude;
+
+	return text;
 };
 
 /*
