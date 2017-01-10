@@ -281,7 +281,7 @@ GtRead.prototype.writeProperty = function(data, length) {
 		text = data;
 		return text;
 	} else if (data.length > length) {
-		text = data.substring(0,lenght);
+		text = data.substring(0,length);
 	} else {
 		text = " ".repeat(length - data.length);//" " * (length - data.length);
 		text = text + data;
