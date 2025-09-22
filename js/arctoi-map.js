@@ -1,35 +1,39 @@
-var map = L.map('map');
+// Initialize map
+const map = L.map('map');
 
-var openstreetmap = new L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+// Create tile layers
+const openstreetmap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 });
 
-var peruskartta = new L.TileLayer('http://{s}.kartat.kapsi.fi/peruskartta/{z}/{x}/{y}.png', {
+const peruskartta = L.tileLayer('https://tiles.kartat.kapsi.fi/peruskartta/{z}/{x}/{y}.png', {
     attribution: 'Kartta: Maanmittauslaitos',
-    maxZoom: 18,
-    subdomains: ['tile1', 'tile2']
+    maxZoom: 18
 });
-var ortokuva = new L.TileLayer('http://{s}.kartat.kapsi.fi/ortokuva/{z}/{x}/{y}.png', {
+
+const ortokuva = L.tileLayer('https://tiles.kartat.kapsi.fi/ortokuva/{z}/{x}/{y}.jpg', {
     attribution: 'Kartta: Maanmittauslaitos',
-    maxZoom: 18,
-    subdomains: ['tile1', 'tile2']
+    maxZoom: 18
 });
 
-var points = new L.FeatureGroup();
+// Create feature group for points
+const points = L.featureGroup();
 
+// Add scale control and set initial view
 L.control.scale().addTo(map);
-map.setView(new L.LatLng(60.1708, 24.9375), 6).addLayer(openstreetmap);
+map.setView([60.1708, 24.9375], 6).addLayer(openstreetmap);
 
-var baseMaps = {
+// Define base maps and overlay maps
+const baseMaps = {
     'OpenStreetMap': openstreetmap,
     'Peruskartta': peruskartta,
     'Ilmakuva': ortokuva,
 };
 
-var overlayMaps = {
-    'Pisteet' : points
+const overlayMaps = {
+    'Pisteet': points
 };
 
+// Add points layer and layer control
 map.addLayer(points);
-
 L.control.layers(baseMaps, overlayMaps).addTo(map);
