@@ -2,6 +2,8 @@
 
 A modular JavaScript mapping platform for surveying and geospatial data processing.
 
+**Demo:** [https://mtpajula.github.io/arctoi/](https://mtpajula.github.io/arctoi/)
+
 ## Overview
 
 Arctoi is a web-based mapping application designed for handling survey data and geospatial measurements. It provides tools for coordinate transformation, point averaging, right-angle calculations, and various file format support.
@@ -144,32 +146,3 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 - **Start Bootstrap** - Initial template and layout
 - **Vladimir Agafonkin** - Leaflet library
 - **Bootstrap Team** - UI framework
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## Support
-
-For issues and questions:
-1. Check the browser console for errors
-2. Verify all dependencies are loaded
-3. Test in different browsers
-4. Create an issue with detailed information
-
-## Changelog
-
-### Version 2.0 (Current)
-- **Updated Dependencies** - Bootstrap 5, Leaflet 1.9.4
-- **Improved UI** - Better responsive design
-- **Enhanced Modules** - More robust error handling
-- **Code Cleanup** - Removed unused files and code
-
-### Version 1.0 (Original)
-- Initial release with basic mapping functionality
-- File format support
-- Surveying tools
