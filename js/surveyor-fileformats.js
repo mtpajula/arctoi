@@ -3,338 +3,325 @@
 Prototype class for all format -classes
 
 */
-var ProtoRead = function () {
-	this.xIse = false;
-	this.s = null;
-    this.isOutput = false;
-    this.isInput = false;
-};
+class ProtoRead {
+    constructor() {
+        this.xIse = false;
+        this.s = null;
+        this.isOutput = false;
+        this.isInput = false;
+    }
 
-ProtoRead.prototype.setStorage = function(s) {
-	this.s = s;
-};
+    setStorage(s) {
+        this.s = s;
+    }
 
-ProtoRead.prototype.changeAxis = function() {
-	if (this.xIse === true) {
-		this.xIse = false;
-	} else {
-		this.xIse = true;
-	}
-};
+    changeAxis() {
+        this.xIse = !this.xIse;
+    }
+}
 
 /*
 
 CSV-writer
 
 */
-function CSVFormat() {
-	ProtoRead.call(this);
-	this.title = 'csv';
-    this.isOutput = true;
+class CSVFormat extends ProtoRead {
+    constructor() {
+        super();
+        this.title = 'csv';
+        this.isOutput = true;
+    }
+
+    write() {
+        if (this.s.points.length === 0) {
+            console.log('Empty points list');
+            return;
+        }
+
+        let text = this.getCsvHeader(this.s.points[0]) + "\r\n";
+
+        for (const point in this.s.points) {
+            text = text + this.getCsvLine(this.s.points[point]) + "\r\n";
+        }
+        return text;
+    }
+
+    getCsvHeader(p) {
+        console.log(p);
+        let h = "";
+        for (const property in p) {
+            if (p.hasOwnProperty(property)) {
+                h = h + property + ";";
+            }
+        }
+        return h;
+    }
+
+    getCsvLine(p) {
+        let l = "";
+        for (const property in p) {
+            if (p.hasOwnProperty(property)) {
+                l = l + p[property] + ";";
+            }
+        }
+        return l;
+    }
 }
-
-CSVFormat.prototype = Object.create(ProtoRead.prototype);
-CSVFormat.prototype.constructor = CSVFormat;
-
-CSVFormat.prototype.write = function() {
-
-	if (this.s.points.length === 0) {
-		console.log('Empty points list');
-		return;
-	}
-
-	var text = this.getCsvHeader(this.s.points[0]) + "\r\n";
-
-	for (var point in this.s.points) {
-		text = text + this.getCsvLine(this.s.points[point]) + "\r\n";
-	}
-	return text;
-};
-
-CSVFormat.prototype.getCsvHeader = function(p) {
-	console.log(p);
-	var h = "";
-	for (var property in p) {
-	    if (p.hasOwnProperty(property)) {
-	        h = h + property + ";";
-	    }
-	}
-	return h;
-};
-
-CSVFormat.prototype.getCsvLine = function(p) {
-	var l = "";
-	for (var property in p) {
-	    if (p.hasOwnProperty(property)) {
-	        l = l + p[property] + ";";
-	    }
-	}
-	return l;
-};
 /*
 
 DXF-reader
 
 */
-function DxfRead() {
-	ProtoRead.call(this);
-	this.title = 'dxf';
-    this.isInput = true;
+class DxfRead extends ProtoRead {
+    constructor() {
+        super();
+        this.title = 'dxf';
+        this.isInput = true;
+    }
+
+    read(file) {
+        console.log('DxfRead read');
+
+        const lines = file.split('\n');
+        const poi = [];
+        let name = '';
+
+        for (let line = 0; line < lines.length; line++) {
+            if (lines[line].includes("POINT")) {
+                name = lines[line + 2]
+            }
+
+            if (lines[line].includes("AcDbPoint")) {
+                const x = lines[line + 2]
+                const y = lines[line + 4]
+                const z = lines[line + 6]
+                this.s.points.push(this.createPoint(name, x, y, z));
+                poi.push(this.s.points.length - 1);
+            }
+        }
+        return poi;
+    }
+
+    createPoint(rawname, rawx, rawy, rawz) {
+        const p = new Point();
+        p.name = rawname.trim();
+
+        const x = parseFloat(rawx.trim());
+        const y = parseFloat(rawy.trim());
+        p.altitude = parseFloat(rawz.trim());
+
+        if (isNaN(p.altitude)) {
+            p.altitude = 0.0;
+        }
+
+        if (this.xIse) {
+            p.n = y;
+            p.e = x;
+        } else {
+            p.n = x;
+            p.e = y;
+        }
+
+        console.log(p.name + '  ' + p.n + '  ' + p.e + '  ' + p.altitude);
+        return p;
+    }
 }
-
-DxfRead.prototype = Object.create(ProtoRead.prototype);
-DxfRead.prototype.constructor = DxfRead;
-
-DxfRead.prototype.read = function(file) {
-	console.log('PrnRead read');
-
-	var lines = file.split('\n');
-    var poi = [];
-    var name = '';
-
-    for(var line = 0; line < lines.length; line++){
-    	if (lines[line].includes("POINT")) {
-    		name = lines[line + 2]
-    	}
-
-    	if (lines[line].includes("AcDbPoint")) {
-    		var x = lines[line + 2]
-    		var y = lines[line + 4]
-    		var z = lines[line + 6]
-    		this.s.points.push(this.createPoint(name,x,y,z));
-            poi.push(this.s.points.length - 1);
-    	}
-    }
-    return poi;
-};
-
-DxfRead.prototype.createPoint = function(rawname,rawx,rawy,rawz) {
-	var p = new Point();
-    p.name = rawname.trim();
-
-    var x = parseFloat(rawx.trim());
-    var y = parseFloat(rawy.trim());
-    p.altitude = parseFloat(rawz.trim());
-
-	if (isNaN(p.altitude)) {
-		p.altitude = 0.0;
-	}
-
-    if (this.xIse) {
-    	p.n = y;
-    	p.e = x;
-    } else {
-    	p.n = x;
-    	p.e = y;
-    }
-
-    console.log(p.name + '  ' + p.n + '  ' + p.e + '  ' + p.altitude);
-    return p;
-};
 
 /*
 
 PRN-reader
 
 */
-function PrnRead() {
-	ProtoRead.call(this);
-	this.title = 'prn';
-    this.isInput = true;
-    this.isOutput = true;
-}
+class PrnRead extends ProtoRead {
+    constructor() {
+        super();
+        this.title = 'prn';
+        this.isInput = true;
+        this.isOutput = true;
+    }
 
-PrnRead.prototype = Object.create(ProtoRead.prototype);
-PrnRead.prototype.constructor = PrnRead;
+    read(file) {
+        console.log('PrnRead read');
+        console.log(file);
 
-PrnRead.prototype.read = function(file) {
-	console.log('PrnRead read');
-	console.log(file);
+        const lines = file.split('\n');
+        const poi = [];
 
-	var lines = file.split('\n');
-    var poi = [];
-
-    for(var line = 0; line < lines.length; line++){
-        console.log(lines[line]);
-        var elements = lines[line].trim().split(' ');
-        console.log(line);
-        if (elements.length == 4) {
-        	console.log(line);
-        	this.s.points.push(this.elementsRead(elements));
-            poi.push(this.s.points.length - 1);
+        for (let line = 0; line < lines.length; line++) {
+            console.log(lines[line]);
+            const elements = lines[line].trim().split(' ');
+            console.log(line);
+            if (elements.length === 4) {
+                console.log(line);
+                this.s.points.push(this.elementsRead(elements));
+                poi.push(this.s.points.length - 1);
+            }
         }
-    }
-    return poi;
-};
-
-PrnRead.prototype.elementsRead = function(elements) {
-
-    var p = new Point();
-    p.name = elements[0].trim();
-
-    var x = parseFloat(elements[1].trim());
-    var y = parseFloat(elements[2].trim());
-
-    p.altitude = parseFloat(elements[3].trim());
-
-    if (this.xIse) {
-    	p.n = y;
-    	p.e = x;
-    } else {
-    	p.n = x;
-    	p.e = y;
+        return poi;
     }
 
-    return p;
-};
+    elementsRead(elements) {
+        const p = new Point();
+        p.name = elements[0].trim();
 
-PrnRead.prototype.write = function() {
-	var text = "";
-	for (var p in this.s.points) {
-		text = text + this.writePoint(this.s.points[p]) + "\r\n";
-	}
-	return text;
-};
+        const x = parseFloat(elements[1].trim());
+        const y = parseFloat(elements[2].trim());
 
-PrnRead.prototype.writePoint = function(p) {
-	var text = "";
+        p.altitude = parseFloat(elements[3].trim());
 
-	text = text + " " + p.name;
+        if (this.xIse) {
+            p.n = y;
+            p.e = x;
+        } else {
+            p.n = x;
+            p.e = y;
+        }
 
-	var x = 0.0;
-	var y = 0.0;
-
-	if (this.xIse) {
-    	y = p.n;
-    	x = p.e;
-    } else {
-    	x = p.n;
-    	y = p.e;
+        return p;
     }
 
-	text = text + " " + x;
-	text = text + " " + y;
-	text = text + " " + p.altitude;
+    write() {
+        let text = "";
+        for (const p in this.s.points) {
+            text = text + this.writePoint(this.s.points[p]) + "\r\n";
+        }
+        return text;
+    }
 
-	return text;
-};
+    writePoint(p) {
+        let text = "";
+
+        text = text + " " + p.name;
+
+        let x = 0.0;
+        let y = 0.0;
+
+        if (this.xIse) {
+            y = p.n;
+            x = p.e;
+        } else {
+            x = p.n;
+            y = p.e;
+        }
+
+        text = text + " " + x;
+        text = text + " " + y;
+        text = text + " " + p.altitude;
+
+        return text;
+    }
+}
 
 /*
 
 GT-reader
 
 */
-function GtRead() {
-	ProtoRead.call(this);
-	this.title = 'gt';
-    this.isInput = true;
-    this.isOutput = true;
-}
-
-GtRead.prototype = Object.create(ProtoRead.prototype);
-GtRead.prototype.constructor = GtRead;
-
-GtRead.prototype.lineRead = function(line) {
-    var p = new Point();
-    p.t1 = line.substring(0,8).trim();
-    p.t2 = line.substring(9,16).trim();
-    p.t3 = line.substring(17,24).trim();
-    p.name = line.substring(25,32).trim();
-
-    var x = parseFloat(line.substring(33,46).trim());
-    var y = parseFloat(line.substring(47,60).trim());
-
-    p.altitude = parseFloat(line.substring(61,74).trim());
-
-    if (this.xIse) {
-    	p.n = y;
-    	p.e = x;
-    } else {
-    	p.n = x;
-    	p.e = y;
+class GtRead extends ProtoRead {
+    constructor() {
+        super();
+        this.title = 'gt';
+        this.isInput = true;
+        this.isOutput = true;
     }
-    return p;
-};
 
-GtRead.prototype.read = function(file) {
-	var lines = file.split('\n');
-    var poi = [];
+    lineRead(line) {
+        const p = new Point();
+        p.t1 = line.substring(0, 8).trim();
+        p.t2 = line.substring(9, 16).trim();
+        p.t3 = line.substring(17, 24).trim();
+        p.name = line.substring(25, 32).trim();
 
-    for(var line = 0; line < lines.length; line++){
-        //console.log(lines[line]);
-        if (lines[line].length > 73 & lines[line].length < 78) {
-        	this.s.points.push(this.lineRead(lines[line]));
-            poi.push(this.s.points.length - 1);
+        const x = parseFloat(line.substring(33, 46).trim());
+        const y = parseFloat(line.substring(47, 60).trim());
+
+        p.altitude = parseFloat(line.substring(61, 74).trim());
+
+        if (this.xIse) {
+            p.n = y;
+            p.e = x;
+        } else {
+            p.n = x;
+            p.e = y;
         }
-    }
-    return poi;
-};
-
-GtRead.prototype.write = function() {
-	var text = "";
-	for (var p in this.s.points) {
-		text = text + this.writePoint(this.s.points[p]) + "\r\n";
-	}
-	return text;
-};
-
-GtRead.prototype.writePoint = function(p) {
-	var text = "";
-
-	text = text + this.writeProperty(p.t1,8);
-	text = text + this.writeProperty(p.t2,8);
-	text = text + this.writeProperty(p.t3,8);
-	text = text + this.writeProperty(p.name,8);
-
-	var x = 0.0;
-	var y = 0.0;
-
-	if (this.xIse) {
-    	y = p.n;
-    	x = p.e;
-    } else {
-    	x = p.n;
-    	y = p.e;
+        return p;
     }
 
-	text = text + this.writeProperty(this.writeCoord(x),14);
-	text = text + this.writeProperty(this.writeCoord(y),14);
-	text = text + this.writeProperty(this.writeCoord(p.altitude),14);
+    read(file) {
+        const lines = file.split('\n');
+        const poi = [];
 
-	return text;
-};
+        for (let line = 0; line < lines.length; line++) {
+            if (lines[line].length > 73 && lines[line].length < 78) {
+                this.s.points.push(this.lineRead(lines[line]));
+                poi.push(this.s.points.length - 1);
+            }
+        }
+        return poi;
+    }
 
-GtRead.prototype.writeProperty = function(data, length) {
+    write() {
+        let text = "";
+        for (const p in this.s.points) {
+            text = text + this.writePoint(this.s.points[p]) + "\r\n";
+        }
+        return text;
+    }
 
-	//console.log("data: "+data +" length: "+ length+" datalength: "+data.length);
-	var text = "";
+    writePoint(p) {
+        let text = "";
 
-	if (data.length === length) {
-		text = data;
-		return text;
-	} else if (data.length > length) {
-		text = data.substring(0,length);
-	} else {
-		text = " ".repeat(length - data.length);//" " * (length - data.length);
-		text = text + data;
-	}
-	//console.log(text);
-	return text
-};
+        text = text + this.writeProperty(p.t1, 8);
+        text = text + this.writeProperty(p.t2, 8);
+        text = text + this.writeProperty(p.t3, 8);
+        text = text + this.writeProperty(p.name, 8);
 
-GtRead.prototype.writeCoord = function(c) {
+        let x = 0.0;
+        let y = 0.0;
 
-	var nums = c.toString().split('.');
+        if (this.xIse) {
+            y = p.n;
+            x = p.e;
+        } else {
+            x = p.n;
+            y = p.e;
+        }
 
-	if (nums.length === 2) {
-		var text = nums[0] + ".";
-		if (nums[1].length === 3) {
-			return text + nums[1];
-		} else if (nums[1].length > 3) {
-			return text + nums[1].substring(0,3);
-		} else {
-			return text + nums[1] + "0".repeat(3 - nums[1].length);
-		}
-	}
-	return nums[0] + ".000";
-};
+        text = text + this.writeProperty(this.writeCoord(x), 14);
+        text = text + this.writeProperty(this.writeCoord(y), 14);
+        text = text + this.writeProperty(this.writeCoord(p.altitude), 14);
+
+        return text;
+    }
+
+    writeProperty(data, length) {
+        let text = "";
+
+        if (data.length === length) {
+            text = data;
+            return text;
+        } else if (data.length > length) {
+            text = data.substring(0, length);
+        } else {
+            text = " ".repeat(length - data.length);
+            text = text + data;
+        }
+        return text;
+    }
+
+    writeCoord(c) {
+        const nums = c.toString().split('.');
+
+        if (nums.length === 2) {
+            let text = nums[0] + ".";
+            if (nums[1].length === 3) {
+                return text + nums[1];
+            } else if (nums[1].length > 3) {
+                return text + nums[1].substring(0, 3);
+            } else {
+                return text + nums[1] + "0".repeat(3 - nums[1].length);
+            }
+        }
+        return nums[0] + ".000";
+    }
+}
