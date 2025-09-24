@@ -246,16 +246,19 @@
       </div>
     </div>
 
-    <!-- Edit Coordinates Modal -->
+    <!-- Edit Point Modal -->
     <div id="editCoordinatesModal" class="modal fade" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Muokkaa koordinaatteja</h5>
+            <h5 class="modal-title">Muokkaa pistettä</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body">
-            <p><b id="editPointName">Pisteen nimi</b></p>
+            <div class="mb-3">
+              <label for="editPointName" class="form-label">Nimi</label>
+              <input type="text" class="form-control" id="editPointName">
+            </div>
             <div class="mb-3">
               <label for="editN" class="form-label">N (m)</label>
               <input type="number" class="form-control" id="editN" step="0.001">

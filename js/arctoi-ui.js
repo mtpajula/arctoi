@@ -332,7 +332,7 @@ const openEditCoordinatesModal = (id) => {
     currentEditingPointId = id;
     
     // Set modal content
-    document.getElementById('editPointName').textContent = p.name;
+    document.getElementById('editPointName').value = p.name;
     document.getElementById('editN').value = p.n.toFixed(3);
     document.getElementById('editE').value = p.e.toFixed(3);
     document.getElementById('editAltitude').value = p.altitude;
@@ -363,17 +363,24 @@ const saveEditedCoordinates = () => {
     if (currentEditingPointId === null) return;
     
     const p = surveyor.s.points[currentEditingPointId];
+    const newName = document.getElementById('editPointName').value.trim();
     const newN = parseFloat(document.getElementById('editN').value);
     const newE = parseFloat(document.getElementById('editE').value);
     const newAltitude = parseFloat(document.getElementById('editAltitude').value);
     
     // Validate inputs
-    if (isNaN(newN) || isNaN(newE) || isNaN(newAltitude)) {
-        arctoiMessage('Edit Coordinates', 'alert', 'Invalid coordinate values');
+    if (!newName) {
+        arctoiMessage('Edit Point', 'alert', 'Point name cannot be empty');
         return;
     }
     
-    // Update point coordinates
+    if (isNaN(newN) || isNaN(newE) || isNaN(newAltitude)) {
+        arctoiMessage('Edit Point', 'alert', 'Invalid coordinate values');
+        return;
+    }
+    
+    // Update point data
+    p.name = newName;
     p.n = newN;
     p.e = newE;
     p.altitude = newAltitude;
@@ -390,7 +397,7 @@ const saveEditedCoordinates = () => {
     const modal = bootstrap.Modal.getInstance(document.getElementById('editCoordinatesModal'));
     modal.hide();
     
-    arctoiMessage('Edit Coordinates', 'success', `Point ${p.name} coordinates updated`);
+    arctoiMessage('Edit Point', 'success', `Point ${p.name} updated`);
 };
 
 // Function to show points modal with all point data
