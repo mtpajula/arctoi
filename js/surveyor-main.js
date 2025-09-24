@@ -24,8 +24,7 @@ class Surveyor {
 
         this.modules = {
             "Pointify": new Pointify(),
-            "ArctoiRightAnglify": new ArctoiRightAnglify(),
-            "correction": new Correction()
+            "ArctoiRightAnglify": new ArctoiRightAnglify()
         };
 
         // TODO jotenkin ei mene hyvin tuo initModules

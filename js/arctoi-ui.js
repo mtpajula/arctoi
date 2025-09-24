@@ -75,8 +75,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const coordinateSelectors = document.querySelectorAll('.arctoi-coordinates');
             for (const coordinatesys in surveyor.t.projs) {
                 coordinateSelectors.forEach(selector => {
+                    const isSelected = coordinatesys === 'EPSG:3067' ? 'selected' : '';
                     selector.insertAdjacentHTML('beforeend', 
-                        `<option value="${coordinatesys}">${surveyor.t.projs[coordinatesys].title}</option>`
+                        `<option value="${coordinatesys}" ${isSelected}>${surveyor.t.projs[coordinatesys].title}</option>`
                     );
                 });
             }
@@ -139,10 +140,18 @@ document.addEventListener('DOMContentLoaded', function() {
         // Coordinate system change -event
         document.addEventListener('change', function(e) {
             if (e.target.classList.contains('arctoi-coordinates')) {
-                surveyor.t.setCartesian(e.target.value);
-                document.querySelectorAll('.arctoi-coordinates').forEach(selector => {
-                    selector.value = e.target.value;
-                });
+                // If it's the point manager coordinates selector, don't change the main coordinate system
+                if (e.target.id === 'point-manager-coordinates') {
+                    // Store the selected coordinate system for point manager
+                    window.pointManagerCoordinateSystem = e.target.value;
+                    arctoiMessage('Settings', 'success', `Point manager coordinate system set to: ${surveyor.t.projs[e.target.value].title}`);
+                } else {
+                    // For other coordinate selectors, update the main coordinate system
+                    surveyor.t.setCartesian(e.target.value);
+                    document.querySelectorAll('.arctoi-coordinates:not(#point-manager-coordinates)').forEach(selector => {
+                        selector.value = e.target.value;
+                    });
+                }
             }
         });
         /*
