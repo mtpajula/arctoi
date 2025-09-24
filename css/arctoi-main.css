@@ -47,3 +47,20 @@
 #infoModal-body {
     font-family: monospace, monospace;
 }
+
+/* Custom marker styles for drawn points */
+.custom-marker {
+    background: transparent !important;
+    border: none !important;
+}
+
+.marker-icon {
+    font-size: 20px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    cursor: pointer;
+}
+
+.marker-icon:hover {
+    transform: scale(1.2);
+    transition: transform 0.2s ease;
+}

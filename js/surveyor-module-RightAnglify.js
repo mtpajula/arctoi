@@ -38,9 +38,10 @@ class ArctoiRightAnglify {
     }
 
     toMapPopup(id, p) {
-        let popup = '<br /><br /><button class="btn btn-primary" onclick=rightangle1(' + id + ') value="test">mittalinjan alku</button>';
-        popup = popup + '<br /><br /><button class="btn btn-primary" onclick=rightangle2(' + id + ') value="test">mittalinjan loppu</button>';
-        popup = popup + '<br /><br /><button class="btn btn-primary" onclick=perpendicular(' + id + ') value="test">mittaa tähän</button>';
+        let popup = '<br /><b>Mittalinja</b><br />';
+        popup = popup + '<button class="btn btn-primary btn-sm" onclick=rightangle1(' + id + ') value="test" style="margin-right: 5px;">a</button>';
+        popup = popup + '<button class="btn btn-primary btn-sm" onclick=rightangle2(' + id + ') value="test" style="margin-right: 5px;">b</button>';
+        popup = popup + '<button class="btn btn-primary btn-sm" onclick=perpendicular(' + id + ') value="test">c</button>';
         return popup;
     }
 }

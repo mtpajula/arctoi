@@ -30,6 +30,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (mc[0] === 'arctoi-clear-all') {
                     surveyor.clear();
                     points.clearLayers();
+                } else if (mc[0] === 'arctoi-show-points') {
+                    showPointsModal();
                 } else {
                     surveyor.runModuleCommand(mc[0], mc[1]);
                 }
@@ -58,6 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Create module dropdown content
         const dropdown = document.getElementById('arctoi-dropdown');
+        dropdown.insertAdjacentHTML('beforeend', '<li><a class="dropdown-item" id="arctoi-show-points" href="#">Pisteet</a></li>');
         dropdown.insertAdjacentHTML('beforeend', '<li><a class="dropdown-item" id="arctoi-clear-all" href="#">Tyhjennä kaikki</a></li>');
 
         for (const m in surveyor.modules) {
@@ -75,8 +78,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const coordinateSelectors = document.querySelectorAll('.arctoi-coordinates');
             for (const coordinatesys in surveyor.t.projs) {
                 coordinateSelectors.forEach(selector => {
+                    const isSelected = coordinatesys === 'EPSG:3067' ? 'selected' : '';
                     selector.insertAdjacentHTML('beforeend', 
-                        `<option value="${coordinatesys}">${surveyor.t.projs[coordinatesys].title}</option>`
+                        `<option value="${coordinatesys}" ${isSelected}>${surveyor.t.projs[coordinatesys].title}</option>`
                     );
                 });
             }
@@ -139,10 +143,18 @@ document.addEventListener('DOMContentLoaded', function() {
         // Coordinate system change -event
         document.addEventListener('change', function(e) {
             if (e.target.classList.contains('arctoi-coordinates')) {
-                surveyor.t.setCartesian(e.target.value);
-                document.querySelectorAll('.arctoi-coordinates').forEach(selector => {
-                    selector.value = e.target.value;
-                });
+                // If it's the point manager coordinates selector, don't change the main coordinate system
+                if (e.target.id === 'point-manager-coordinates') {
+                    // Store the selected coordinate system for point manager
+                    window.pointManagerCoordinateSystem = e.target.value;
+                    arctoiMessage('Settings', 'success', `Point manager coordinate system set to: ${surveyor.t.projs[e.target.value].title}`);
+                } else {
+                    // For other coordinate selectors, update the main coordinate system
+                    surveyor.t.setCartesian(e.target.value);
+                    document.querySelectorAll('.arctoi-coordinates:not(#point-manager-coordinates)').forEach(selector => {
+                        selector.value = e.target.value;
+                    });
+                }
             }
         });
         /*
@@ -289,9 +301,13 @@ const pointMarker = (id) => {
     const p = surveyor.s.points[id];
     //console.log('pointMarker '+p.name+' '+p.ui);
     if (p.ui === null) {
-        let popup = `pisteitä: ${p.measurements} kpl`;
-        popup = popup + `<br />Nimi: <b>${p.name}</b>`;
-        popup = popup + `<br />Korkeus: ${p.altitude}`;
+        let popup = `<table class="table table-bordered table-sm" style="cursor: pointer;" onclick="openEditCoordinatesModal(${id})"><tbody>`;
+        popup = popup + `<tr><td>Nimi</td><td><b>${p.name}</b></td></tr>`;
+        popup = popup + `<tr><td>N (m)</td><td>${p.n.toFixed(3)}</td></tr>`;
+        popup = popup + `<tr><td>E (m)</td><td>${p.e.toFixed(3)}</td></tr>`;
+        popup = popup + `<tr><td>Korkeus (m)</td><td>${p.altitude}</td></tr>`;
+        popup = popup + `<tr><td>EPSG</td><td>${p.epsg}</td></tr>`;
+        popup = popup + `</tbody></table>`;
         
         for (const m in surveyor.modules) {
             try {
@@ -300,13 +316,125 @@ const pointMarker = (id) => {
                 // Ignore errors
             }
         }
-        /*
-        if (p.image) {
-            popup = popup + `<br /><button onclick=openImage(${p.name}) value="test">Avaa kuva</button>`;
-        }
-        */
 
-        L.circleMarker([p.lat, p.lon]).bindPopup(popup).addTo(points);
-        surveyor.s.points[id].ui = "leaflet";
+        const marker = L.circleMarker([p.lat, p.lon]).bindPopup(popup).addTo(points);
+        marker.pointData = p; // Store reference to the point
+        surveyor.s.points[id].ui = marker; // Store reference to the marker
     }
+};
+
+// Global variable to store the currently edited point ID
+let currentEditingPointId = null;
+
+// Function to open the edit coordinates modal
+const openEditCoordinatesModal = (id) => {
+    const p = surveyor.s.points[id];
+    currentEditingPointId = id;
+    
+    // Set modal content
+    document.getElementById('editPointName').value = p.name;
+    document.getElementById('editN').value = p.n.toFixed(3);
+    document.getElementById('editE').value = p.e.toFixed(3);
+    document.getElementById('editAltitude').value = p.altitude;
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('editCoordinatesModal'));
+    modal.show();
+};
+
+// Function to update a specific point marker
+const updatePointMarker = (id) => {
+    const p = surveyor.s.points[id];
+    
+    // Remove the old marker if it exists
+    if (p.ui && typeof p.ui.remove === 'function') {
+        points.removeLayer(p.ui);
+    }
+    
+    // Reset UI flag so it can be redrawn
+    p.ui = null;
+    
+    // Redraw the point marker
+    pointMarker(id);
+};
+
+// Function to save edited coordinates
+const saveEditedCoordinates = () => {
+    if (currentEditingPointId === null) return;
+    
+    const p = surveyor.s.points[currentEditingPointId];
+    const newName = document.getElementById('editPointName').value.trim();
+    const newN = parseFloat(document.getElementById('editN').value);
+    const newE = parseFloat(document.getElementById('editE').value);
+    const newAltitude = parseFloat(document.getElementById('editAltitude').value);
+    
+    // Validate inputs
+    if (!newName) {
+        arctoiMessage('Edit Point', 'alert', 'Point name cannot be empty');
+        return;
+    }
+    
+    if (isNaN(newN) || isNaN(newE) || isNaN(newAltitude)) {
+        arctoiMessage('Edit Point', 'alert', 'Invalid coordinate values');
+        return;
+    }
+    
+    // Update point data
+    p.name = newName;
+    p.n = newN;
+    p.e = newE;
+    p.altitude = newAltitude;
+    
+    // Transform to lat/lon using the point's EPSG system
+    const coords = surveyor.t.cartesianToPolar(p.e, p.n);
+    p.lat = coords[1];
+    p.lon = coords[0];
+    
+    // Update the specific point marker on the map
+    updatePointMarker(currentEditingPointId);
+    
+    // Close modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('editCoordinatesModal'));
+    modal.hide();
+    
+    arctoiMessage('Edit Point', 'success', `Point ${p.name} updated`);
+};
+
+// Function to show points modal with all point data
+const showPointsModal = () => {
+    const points = surveyor.s.points;
+    const tbody = document.getElementById('pointsTableBody');
+    const countElement = document.getElementById('pointsCount');
+    
+    // Update count
+    countElement.textContent = points.length;
+    
+    // Clear existing rows
+    tbody.innerHTML = '';
+    
+    // Add rows for each point
+    points.forEach((point, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${index + 1}</td>
+            <td><b>${point.name}</b></td>
+            <td>${point.t1 || ''}</td>
+            <td>${point.t2 || ''}</td>
+            <td>${point.t3 || ''}</td>
+            <td>${point.n ? point.n.toFixed(3) : ''}</td>
+            <td>${point.e ? point.e.toFixed(3) : ''}</td>
+            <td>${point.lat ? point.lat.toFixed(6) : ''}</td>
+            <td>${point.lon ? point.lon.toFixed(6) : ''}</td>
+            <td>${point.altitude || ''}</td>
+            <td>${point.measurements || ''}</td>
+            <td>${point.accuracy || ''}</td>
+            <td>${point.altitudeAccuracy || ''}</td>
+            <td>${point.epsg || ''}</td>
+        `;
+        tbody.appendChild(row);
+    });
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('pointsListModal'));
+    modal.show();
 };
