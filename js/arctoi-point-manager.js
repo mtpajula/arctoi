@@ -90,12 +90,18 @@ class PointManager {
 
 // Initialize point manager when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Wait for map and surveyor to be initialized
-    setTimeout(() => {
+    // Function to wait for dependencies and initialize PointManager
+    function waitForDependencies() {
         if (typeof map !== 'undefined' && typeof surveyor !== 'undefined') {
+            // Both dependencies are ready, initialize PointManager
             window.pointManager = new PointManager(map, surveyor);
+            console.log('PointManager initialized successfully');
         } else {
-            console.error('Map or surveyor not initialized');
+            // Dependencies not ready yet, check again in next tick
+            requestAnimationFrame(waitForDependencies);
         }
-    }, 1000);
+    }
+    
+    // Start waiting for dependencies
+    waitForDependencies();
 });
