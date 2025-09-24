@@ -298,7 +298,7 @@ const pointMarker = (id) => {
     const p = surveyor.s.points[id];
     //console.log('pointMarker '+p.name+' '+p.ui);
     if (p.ui === null) {
-        let popup = `<table class="table table-bordered table-sm"><tbody>`;
+        let popup = `<table class="table table-bordered table-sm" style="cursor: pointer;" onclick="openEditCoordinatesModal(${id})"><tbody>`;
         popup = popup + `<tr><td>Nimi</td><td><b>${p.name}</b></td></tr>`;
         popup = popup + `<tr><td>N (m)</td><td>${p.n.toFixed(3)}</td></tr>`;
         popup = popup + `<tr><td>E (m)</td><td>${p.e.toFixed(3)}</td></tr>`;
@@ -314,7 +314,78 @@ const pointMarker = (id) => {
             }
         }
 
-        L.circleMarker([p.lat, p.lon]).bindPopup(popup).addTo(points);
-        surveyor.s.points[id].ui = "leaflet";
+        const marker = L.circleMarker([p.lat, p.lon]).bindPopup(popup).addTo(points);
+        marker.pointData = p; // Store reference to the point
+        surveyor.s.points[id].ui = marker; // Store reference to the marker
     }
+};
+
+// Global variable to store the currently edited point ID
+let currentEditingPointId = null;
+
+// Function to open the edit coordinates modal
+const openEditCoordinatesModal = (id) => {
+    const p = surveyor.s.points[id];
+    currentEditingPointId = id;
+    
+    // Set modal content
+    document.getElementById('editPointName').textContent = p.name;
+    document.getElementById('editN').value = p.n.toFixed(3);
+    document.getElementById('editE').value = p.e.toFixed(3);
+    document.getElementById('editAltitude').value = p.altitude;
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('editCoordinatesModal'));
+    modal.show();
+};
+
+// Function to update a specific point marker
+const updatePointMarker = (id) => {
+    const p = surveyor.s.points[id];
+    
+    // Remove the old marker if it exists
+    if (p.ui && typeof p.ui.remove === 'function') {
+        points.removeLayer(p.ui);
+    }
+    
+    // Reset UI flag so it can be redrawn
+    p.ui = null;
+    
+    // Redraw the point marker
+    pointMarker(id);
+};
+
+// Function to save edited coordinates
+const saveEditedCoordinates = () => {
+    if (currentEditingPointId === null) return;
+    
+    const p = surveyor.s.points[currentEditingPointId];
+    const newN = parseFloat(document.getElementById('editN').value);
+    const newE = parseFloat(document.getElementById('editE').value);
+    const newAltitude = parseFloat(document.getElementById('editAltitude').value);
+    
+    // Validate inputs
+    if (isNaN(newN) || isNaN(newE) || isNaN(newAltitude)) {
+        arctoiMessage('Edit Coordinates', 'alert', 'Invalid coordinate values');
+        return;
+    }
+    
+    // Update point coordinates
+    p.n = newN;
+    p.e = newE;
+    p.altitude = newAltitude;
+    
+    // Transform to lat/lon using the point's EPSG system
+    const coords = surveyor.t.cartesianToPolar(p.e, p.n);
+    p.lat = coords[1];
+    p.lon = coords[0];
+    
+    // Update the specific point marker on the map
+    updatePointMarker(currentEditingPointId);
+    
+    // Close modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('editCoordinatesModal'));
+    modal.hide();
+    
+    arctoiMessage('Edit Coordinates', 'success', `Point ${p.name} coordinates updated`);
 };

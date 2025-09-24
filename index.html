@@ -246,6 +246,37 @@
       </div>
     </div>
 
+    <!-- Edit Coordinates Modal -->
+    <div id="editCoordinatesModal" class="modal fade" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Muokkaa koordinaatteja</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <p><b id="editPointName">Pisteen nimi</b></p>
+            <div class="mb-3">
+              <label for="editN" class="form-label">N (m)</label>
+              <input type="number" class="form-control" id="editN" step="0.001">
+            </div>
+            <div class="mb-3">
+              <label for="editE" class="form-label">E (m)</label>
+              <input type="number" class="form-control" id="editE" step="0.001">
+            </div>
+            <div class="mb-3">
+              <label for="editAltitude" class="form-label">Korkeus (m)</label>
+              <input type="number" class="form-control" id="editAltitude" step="0.001">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" onclick="saveEditedCoordinates()">Tallenna</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Peruuta</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Bootstrap 5 JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
