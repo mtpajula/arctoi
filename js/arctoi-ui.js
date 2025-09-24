@@ -298,9 +298,13 @@ const pointMarker = (id) => {
     const p = surveyor.s.points[id];
     //console.log('pointMarker '+p.name+' '+p.ui);
     if (p.ui === null) {
-        let popup = `pisteitä: ${p.measurements} kpl`;
-        popup = popup + `<br />Nimi: <b>${p.name}</b>`;
-        popup = popup + `<br />Korkeus: ${p.altitude}`;
+        let popup = `<table class="table table-bordered table-sm"><tbody>`;
+        popup = popup + `<tr><td>Nimi</td><td><b>${p.name}</b></td></tr>`;
+        popup = popup + `<tr><td>N (m)</td><td>${p.n.toFixed(3)}</td></tr>`;
+        popup = popup + `<tr><td>E (m)</td><td>${p.e.toFixed(3)}</td></tr>`;
+        popup = popup + `<tr><td>Korkeus (m)</td><td>${p.altitude}</td></tr>`;
+        popup = popup + `<tr><td>EPSG</td><td>${p.epsg}</td></tr>`;
+        popup = popup + `</tbody></table>`;
         
         for (const m in surveyor.modules) {
             try {
@@ -309,11 +313,6 @@ const pointMarker = (id) => {
                 // Ignore errors
             }
         }
-        /*
-        if (p.image) {
-            popup = popup + `<br /><button onclick=openImage(${p.name}) value="test">Avaa kuva</button>`;
-        }
-        */
 
         L.circleMarker([p.lat, p.lon]).bindPopup(popup).addTo(points);
         surveyor.s.points[id].ui = "leaflet";
