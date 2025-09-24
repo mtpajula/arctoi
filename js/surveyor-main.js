@@ -111,24 +111,10 @@ class Surveyor {
         return s;
     }
 
-    // Helper function to create clean storage for export using JSON methods
-    createCleanStorage() {
-        // Create a deep copy using JSON methods, excluding the 'ui' property
-        const cleanPoints = this.s.points.map(p => {
-            const { ui, ...cleanPoint } = p; // Destructure to exclude 'ui'
-            return cleanPoint;
-        });
-        
-        return JSON.parse(JSON.stringify({
-            points: cleanPoints,
-            epsg: this.s.epsg
-        }));
-    }
-
     output() {
         if (this.s.epsg != this.t.epsg) {
             console.log("Eri koordinaatisto kuin tuodessa");
-            let copys = this.createCleanStorage();
+            let copys = this.s.copy();
             copys = this.TransformPointsPolarToCartesian(copys);
             this.formats[this.currentOutputFormat].setStorage(copys);
             surveyorMessage('main', 'neutral', ` Muunto: ${this.s.epsg} > ${this.t.epsg}`);
@@ -194,6 +180,19 @@ class Storage {
         }
         console.log(`Storage: ${this.epsg}`);
         return true;
+    }
+
+    // Create a copy of this storage, excluding UI references
+    copy() {
+        const points = this.points.map(p => {
+            const { ui, ...point } = p; // Remove UI reference
+            return { ...point }; // Shallow copy of remaining properties
+        });
+        
+        return {
+            points: points,
+            epsg: this.epsg
+        };
     }
 }
 
