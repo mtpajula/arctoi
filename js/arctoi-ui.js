@@ -30,6 +30,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (mc[0] === 'arctoi-clear-all') {
                     surveyor.clear();
                     points.clearLayers();
+                } else if (mc[0] === 'arctoi-show-points') {
+                    showPointsModal();
                 } else {
                     surveyor.runModuleCommand(mc[0], mc[1]);
                 }
@@ -58,6 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Create module dropdown content
         const dropdown = document.getElementById('arctoi-dropdown');
+        dropdown.insertAdjacentHTML('beforeend', '<li><a class="dropdown-item" id="arctoi-show-points" href="#">Pisteet</a></li>');
         dropdown.insertAdjacentHTML('beforeend', '<li><a class="dropdown-item" id="arctoi-clear-all" href="#">Tyhjennä kaikki</a></li>');
 
         for (const m in surveyor.modules) {
@@ -388,4 +391,43 @@ const saveEditedCoordinates = () => {
     modal.hide();
     
     arctoiMessage('Edit Coordinates', 'success', `Point ${p.name} coordinates updated`);
+};
+
+// Function to show points modal with all point data
+const showPointsModal = () => {
+    const points = surveyor.s.points;
+    const tbody = document.getElementById('pointsTableBody');
+    const countElement = document.getElementById('pointsCount');
+    
+    // Update count
+    countElement.textContent = points.length;
+    
+    // Clear existing rows
+    tbody.innerHTML = '';
+    
+    // Add rows for each point
+    points.forEach((point, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${index + 1}</td>
+            <td><b>${point.name}</b></td>
+            <td>${point.t1 || ''}</td>
+            <td>${point.t2 || ''}</td>
+            <td>${point.t3 || ''}</td>
+            <td>${point.n ? point.n.toFixed(3) : ''}</td>
+            <td>${point.e ? point.e.toFixed(3) : ''}</td>
+            <td>${point.lat ? point.lat.toFixed(6) : ''}</td>
+            <td>${point.lon ? point.lon.toFixed(6) : ''}</td>
+            <td>${point.altitude || ''}</td>
+            <td>${point.measurements || ''}</td>
+            <td>${point.accuracy || ''}</td>
+            <td>${point.altitudeAccuracy || ''}</td>
+            <td>${point.epsg || ''}</td>
+        `;
+        tbody.appendChild(row);
+    });
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('pointsListModal'));
+    modal.show();
 };
