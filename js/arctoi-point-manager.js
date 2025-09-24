@@ -64,6 +64,11 @@ class PointManager {
         // Add point to surveyor storage
         this.surveyor.s.points.push(point);
         
+        // Set storage coordinate system if it's empty
+        if (this.surveyor.s.epsg === "") {
+            this.surveyor.s.epsg = selectedCoordSystem;
+        }
+        
         // Remove the default marker from the map
         this.map.removeLayer(layer);
         
