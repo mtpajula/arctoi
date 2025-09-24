@@ -15,12 +15,13 @@ Arctoi is a web-based mapping application designed for handling survey data and 
 - **Coordinate Systems** - Support for various coordinate systems via Proj4js
 - **File Format Support** - Import/export in multiple formats (GT, CSV, DXF, PRN)
 - **Point Management** - Create, edit, and manage survey points
-- **GPS Integration** - Real-time GPS positioning and data collection
+- **Manual Point Adding** - Add points directly on the map using drawing tools
+- **Point Editing** - Edit point names, coordinates, and altitude
+- **Points Table** - View all points in a comprehensive scrollable table
 
 ### Surveying Tools
 - **Pointify Module** - GPS position collection and averaging
 - **RightAnglify Module** - Right-angle measurement calculations
-- **Correction Module** - Survey line correction algorithms
 - **Point Management** - Comprehensive point storage and manipulation
 
 ### Technical Features
@@ -51,10 +52,11 @@ Arctoi is a web-based mapping application designed for handling survey data and 
 ## Usage
 
 ### Basic Workflow
-1. **Load Data** - Import survey data from supported file formats
-2. **Set Coordinate System** - Choose appropriate coordinate system
-3. **Process Data** - Use various modules for data processing
-4. **Export Results** - Save processed data in desired format
+1. **Load Data** - Import survey data from supported file formats OR add points manually
+2. **Set Coordinate System** - Choose appropriate coordinate system for point adding
+3. **Manage Points** - Edit point names, coordinates, and view all points in table
+4. **Process Data** - Use various modules for data processing
+5. **Export Results** - Save processed data in desired format
 
 ### Modules
 
@@ -67,11 +69,24 @@ Arctoi is a web-based mapping application designed for handling survey data and 
 - **Right Angle Measurements** - Calculate perpendicular distances
 - **Survey Line Creation** - Define measurement lines
 - **Intersection Calculations** - Find intersection points
+- **Interactive Buttons** - Color-coded buttons showing measurement state
 
-#### Correction
-- **Line Correction** - Apply corrections to survey lines
-- **Error Distribution** - Distribute errors across measurements
-- **Quality Control** - Validate survey data
+### Point Management Features
+
+#### Manual Point Adding
+- **Drawing Tools** - Use Leaflet.Draw to add points on the map
+- **Coordinate System Selection** - Choose coordinate system for new points
+- **Automatic Transformation** - Points are transformed to selected coordinate system
+
+#### Point Editing
+- **Comprehensive Editing** - Edit point name, coordinates, and altitude
+- **Click-to-Edit** - Click on coordinate table in point popup to edit
+- **Real-time Updates** - Changes are immediately reflected on the map
+
+#### Points Table
+- **Complete Overview** - View all points in a scrollable table
+- **All Data Fields** - Shows all point information except UI elements
+- **Responsive Design** - Works on all screen sizes
 
 ### File Formats
 
@@ -94,6 +109,7 @@ Arctoi is a web-based mapping application designed for handling survey data and 
 
 ### Dependencies
 - **Leaflet 1.9.4** - Interactive maps
+- **Leaflet.Draw 1.0.4** - Drawing tools for point adding
 - **Bootstrap 5.3.2** - UI framework
 - **Proj4js** - Coordinate transformations
 
@@ -115,6 +131,7 @@ arctoi/
 │   ├── arctoi-map.js     # Map initialization
 │   ├── arctoi-ui.js      # UI interactions
 │   ├── arctoi-message.js # Message system
+│   ├── arctoi-point-manager.js # Point adding functionality
 │   ├── surveyor-main.js  # Core surveyor class
 │   ├── surveyor-fileformats.js # File format handlers
 │   └── surveyor-module-*.js # Feature modules
